@@ -8,6 +8,7 @@ import android.net.NetworkInfo;
 import android.widget.Toast;
 
 import io.reactivex.disposables.Disposable;
+import retrofit.NetworkUtils;
 import retrofit.Utils.BaseObserver;
 
 /**
@@ -26,14 +27,15 @@ public abstract class MyObserver<T> extends BaseObserver<T> {
     }
 
     public MyObserver(Context context) {
-        this(context,true);
+        this(context,false);
     }
 
     @Override
     public void onSubscribe(Disposable d) {
         this.d = d;
-        if (!isConnected(mContext)) {
-            Toast.makeText(mContext,"未连接网络",Toast.LENGTH_SHORT).show();
+//        if (!isConnected(mContext)) {
+        if (!NetworkUtils.isNetwork(mContext)) {
+//            Toast.makeText(mContext,"未连接网络",Toast.LENGTH_SHORT).show();
             if (d.isDisposed()) {
                 d.dispose();
             }

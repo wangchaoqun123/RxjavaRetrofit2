@@ -28,7 +28,6 @@ public class MainActivity extends RxActivity implements View.OnClickListener {
     private MyObserver<Demo> myObserver;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,9 +37,10 @@ public class MainActivity extends RxActivity implements View.OnClickListener {
         findViewById(R.id.btn_2).setOnClickListener(this);
         tv_retrofit = findViewById(R.id.tv_retrofit);
     }
+
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.btn_0:
                 getRetrofit();
                 break;
@@ -52,11 +52,12 @@ public class MainActivity extends RxActivity implements View.OnClickListener {
                 break;
         }
     }
+
     private void getRetrofit() {
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .readTimeout(Constans.DEFAULT_TIME, TimeUnit.SECONDS)//设置读取超时时间
                 .connectTimeout(Constans.DEFAULT_TIME, TimeUnit.SECONDS)//设置请求超时时间
-                .writeTimeout(Constans.DEFAULT_TIME,TimeUnit.SECONDS)//设置写入超时时间
+                .writeTimeout(Constans.DEFAULT_TIME, TimeUnit.SECONDS)//设置写入超时时间
                 .addInterceptor(new LogInterceptor())//添加打印拦截器
                 .retryOnConnectionFailure(true)//设置出现错误进行重新连接。
                 .build();
@@ -72,13 +73,13 @@ public class MainActivity extends RxActivity implements View.OnClickListener {
         demo.enqueue(new Callback<Bean>() {
             @Override
             public void onResponse(Call<Bean> call, Response<Bean> response) {
-                Log.e(TAG, "请求成功信息: "+response.body().toString());
+                Log.e(TAG, "请求成功信息: " + response.body().toString());
                 tv_retrofit.setText(response.body().toString());
             }
 
             @Override
             public void onFailure(Call<Bean> call, Throwable t) {
-                Log.e(TAG, "请求失败信息: " +t.getMessage());
+                Log.e(TAG, "请求失败信息: " + t.getMessage());
                 tv_retrofit.setText(t.getMessage());
             }
         });
@@ -89,11 +90,12 @@ public class MainActivity extends RxActivity implements View.OnClickListener {
         RequestUtils.getDemoList(this, new MyObserver<List<Demo>>(this) {
             @Override
             public void onSuccess(List<Demo> result) {
-                for (Demo demo:result){
-                    Log.e(TAG, "onSuccess: "+demo.toString() );
+                for (Demo demo : result) {
+                    Log.e(TAG, "onSuccess: " + demo.toString());
                 }
                 tv_retrofit.setText(result.toString());
             }
+
             @Override
             public void onFailure(Throwable e, String errorMsg) {
                 tv_retrofit.setText(errorMsg);
@@ -107,17 +109,22 @@ public class MainActivity extends RxActivity implements View.OnClickListener {
             public void onSuccess(Demo result) {
                 tv_retrofit.setText(result.toString());
             }
+
             @Override
             public void onFailure(Throwable e, String errorMsg) {
                 tv_retrofit.setText(errorMsg);
             }
         };
-        RequestUtils.getDemo(this,myObserver);
+        RequestUtils.getDemo(this, myObserver);
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        myObserver.cancleRequest();
+        if (myObserver != null) {
+            myObserver.cancleRequest();
+        }
+        ToastUtils.getInstance().makeText(MainActivity.this, "onBackPressed");
+        Log.i("MainActivity", "onBackPressed");
     }
 }
